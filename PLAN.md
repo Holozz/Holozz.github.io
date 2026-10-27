@@ -128,3 +128,9 @@ Sites 用于遵循建站与设计流程；正式发布目标按用户要求保�
 - 已创建公开仓库 Holozz/Holozz.github.io，main 分支承载所有阶段提交。
 - GitHub Actions 构建与部署成功，正式站点 https://holozz.github.io/ 已可访问。
 - 线上 18 个双语栏目、资源、语言切换、手机相册空状态和自定义 404 检查通过。
+
+## 11. 后续外观更新（2026-10-27）
+
+- 已增加白天／暗夜模式，首次按系统偏好选择，手动选择后记住。
+- 已将界面、正文和代码字体、正文字号与行高集中到 src/styles/appearance.css。
+- 双语、桌面与手机以及临时内容回归通过；详见 VALIDATION.md 与 docs/APPEARANCE.md。
