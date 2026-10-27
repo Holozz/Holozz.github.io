@@ -1,0 +1,33 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Album } from '../lib/content';
+import { messages, formatDate, type Lang } from '../lib/i18n';
+interface Props { album: Album; lang: Lang; }
+const { album, lang } = Astro.props; const t = messages[lang];
+const full = await Promise.all(album.data.photos.map(p => getImage({src:p.src,width:Math.min(1600,p.src.width),format:'webp'})));
+---
+<header class="card page-heading"><h1>{album.data.title[lang]}</h1><p>{album.data.description[lang]}</p><p>{formatDate(album.data.date,lang)} · {album.data.photos.length} {t.photoCount}</p></header>
+<div class="photo-grid">{album.data.photos.map((p,i) => <figure><a class="photo-open" href={full[i].src} data-photo-src={full[i].src} data-photo-alt={p.alt[lang]} data-photo-caption={p.caption?.[lang] || ''} aria-label={t.photoOpen+': '+p.alt[lang]}><Image src={p.src} width={Math.min(640,p.src.width)} alt={p.alt[lang]} loading="lazy"/></a>{p.caption?.[lang] && <figcaption>{p.caption[lang]}</figcaption>}</figure>)}</div>
+<dialog class="lightbox" aria-label={album.data.title[lang]}>
+<div class="lightbox-toolbar"><span class="lightbox-counter" aria-live="polite"></span><button type="button" data-photo-previous aria-label={t.photoPrevious}>←</button><button type="button" data-photo-next aria-label={t.photoNext}>→</button><button type="button" data-photo-close aria-label={t.photoClose}><Icon name="close" size={18}/></button></div>
+<img class="lightbox-image" alt=""/><p class="lightbox-caption"></p>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('.lightbox');
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-photo-src]')];
+  let index = 0;
+  function showPhoto(next: number) {
+    index = (next + links.length) % links.length; const link = links[index];
+    const image = dialog?.querySelector<HTMLImageElement>('.lightbox-image');
+    if(image){ image.src = link.dataset.photoSrc || ''; image.alt = link.dataset.photoAlt || ''; }
+    const caption = dialog?.querySelector('.lightbox-caption'); if(caption) caption.textContent = link.dataset.photoCaption || '';
+    const counter = dialog?.querySelector('.lightbox-counter'); if(counter) counter.textContent = (index+1) + ' / ' + links.length;
+  }
+  links.forEach((link,i) => link.addEventListener('click',event => { if(!dialog || typeof dialog.showModal !== 'function') return; event.preventDefault(); showPhoto(i); dialog.showModal(); }));
+  dialog?.querySelector('[data-photo-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.querySelector('[data-photo-previous]')?.addEventListener('click', () => showPhoto(index-1));
+  dialog?.querySelector('[data-photo-next]')?.addEventListener('click', () => showPhoto(index+1));
+  dialog?.addEventListener('keydown', event => { if(event.key==='ArrowLeft'){event.preventDefault();showPhoto(index-1);}if(event.key==='ArrowRight'){event.preventDefault();showPhoto(index+1);} });
+  dialog?.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
+</script>

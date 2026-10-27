@@ -1,0 +1,30 @@
+---
+import { render } from 'astro:content';
+import { postHref, type Post } from '../lib/content';
+import { messages, href, formatDate, type Lang } from '../lib/i18n';
+interface Props { post: Post; lang: Lang; siblings: Post[]; }
+const { post, lang, siblings } = Astro.props; const t = messages[lang];
+const { Content, headings } = await render(post);
+const index = siblings.findIndex(p => p.id === post.id);
+const previous = siblings[index + 1]; const next = siblings[index - 1];
+---
+<article class="card reading-card" lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+<header><div class="post-meta"><a href={href(lang,post.data.kind)}>{t[post.data.kind]}</a><time datetime={post.data.pubDate.toISOString()}>{t.published} {formatDate(post.data.pubDate,lang)}</time>{post.data.updatedDate && <time datetime={post.data.updatedDate.toISOString()}>{t.updated} {formatDate(post.data.updatedDate,lang)}</time>}</div><h1>{post.data.title}</h1><p class="post-description">{post.data.description}</p><div class="tag-cloud">{post.data.tags.map(tag => <a href={href(lang,'tags/'+encodeURIComponent(tag))}>{tag}</a>)}</div></header>
+{headings.length > 0 && <details class="mobile-toc"><summary>{t.contents}</summary><ul>{headings.filter(h => h.depth === 2 || h.depth === 3).map(h => <li><a href={'#'+h.slug}>{h.text}</a></li>)}</ul></details>}
+<div class="prose"><Content/></div>
+<p class="copy-feedback" aria-live="polite" data-copy-feedback></p>
+<nav class="post-navigation" aria-label={lang === 'zh' ? '相邻文章' : 'Adjacent entries'}>{previous && <a href={postHref(previous)}><small>{t.previous}</small>{previous.data.title}</a>}{next && <a href={postHref(next)}><small>{t.next}</small>{next.data.title}</a>}</nav>
+</article>
+<div hidden data-copy-label={t.copy} data-copied-label={t.copied} data-copy-failed={t.copyFailed}></div>
+<script>
+  const labels = document.querySelector<HTMLElement>('[data-copy-label]');
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach(pre => {
+    const code = pre.querySelector('code'); if (!code) return;
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'copy-code'; button.textContent = labels?.dataset.copyLabel || 'Copy code';
+    button.addEventListener('click', async () => {
+      const feedback = document.querySelector<HTMLElement>('[data-copy-feedback]');
+      try { await navigator.clipboard.writeText(code.textContent || ''); button.textContent = labels?.dataset.copiedLabel || 'Copied'; if (feedback) feedback.textContent = button.textContent; setTimeout(() => { button.textContent = labels?.dataset.copyLabel || 'Copy code'; }, 1600); }
+      catch { if (feedback) feedback.textContent = labels?.dataset.copyFailed || 'Could not copy'; }
+    }); pre.append(button);
+  });
+</script>

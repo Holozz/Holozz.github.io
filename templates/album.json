@@ -1,0 +1,26 @@
+{
+  "slug": "your-album",
+  "title": {
+    "zh": "相册名称",
+    "en": "Album title"
+  },
+  "description": {
+    "zh": "相册说明",
+    "en": "Album description"
+  },
+  "date": "2026-10-27",
+  "draft": true,
+  "photos": [
+    {
+      "src": "../../assets/your-album/photo.jpg",
+      "alt": {
+        "zh": "照片内容描述",
+        "en": "Describe what is in the photo"
+      },
+      "caption": {
+        "zh": "照片说明",
+        "en": "Photo caption"
+      }
+    }
+  ]
+}
