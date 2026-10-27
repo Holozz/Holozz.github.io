@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import { messages, type Lang } from '../lib/i18n';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = messages[lang];
+---
+<div class="theme-switch" role="group" aria-label={t.appearance}>
+  <button type="button" data-theme-choice="light" aria-pressed="true" aria-label={t.lightMode} title={t.lightMode}><Icon name="sun" size={15}/><span class="theme-label">{t.lightMode}</span></button>
+  <button type="button" data-theme-choice="dark" aria-pressed="false" aria-label={t.darkMode} title={t.darkMode}><Icon name="moon" size={15}/><span class="theme-label">{t.darkMode}</span></button>
+</div>
+<script>
+  const choices = document.querySelectorAll<HTMLButtonElement>('[data-theme-choice]');
+  function applyTheme(theme: string) {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#121720' : '#f5f5f5');
+    choices.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.themeChoice === theme)));
+  }
+  applyTheme(document.documentElement.dataset.theme || 'light');
+  choices.forEach(button => button.addEventListener('click', () => {
+    const theme = button.dataset.themeChoice!;
+    applyTheme(theme);
+    try { localStorage.setItem('holozz-theme', theme); } catch {}
+  }));
+</script>

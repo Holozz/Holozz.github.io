@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Icon from '../components/Icon.astro';
+import ThemeSwitch from '../components/ThemeSwitch.astro';
 import github from '../data/github.json';
 import { getPosts, getAlbums, localizedPosts, taxonomy, postHref } from '../lib/content';
 import { messages, href, sections, formatDate, type Lang, type Section } from '../lib/i18n';
@@ -15,10 +16,19 @@ const pageTitle = title ? title + ' · Holozz' : t.siteName;
 const pageDescription = description || t.siteDescription;
 ---
 <!doctype html>
-<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+<html data-theme="light" lang={lang === 'zh' ? 'zh-CN' : 'en'}>
 <head>
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#3273dc"/><title>{pageTitle}</title>
+  <meta name="theme-color" content="#f5f5f5"/>
+  <script is:inline>
+    (() => {
+      let stored;
+      try { stored = localStorage.getItem('holozz-theme'); } catch {}
+      const theme = stored === 'light' || stored === 'dark' ? stored : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#121720' : '#f5f5f5');
+    })();
+  </script><title>{pageTitle}</title>
   <meta name="description" content={pageDescription}/>
   {!noindex && <link rel="canonical" href={canonical}/>}<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
   {alternateHref && <><link rel="alternate" hreflang={lang === 'zh' ? 'zh-CN' : 'en'} href={canonical}/><link rel="alternate" hreflang={otherLang === 'zh' ? 'zh-CN' : 'en'} href={new URL(alternateHref, Astro.site)}/></>}
@@ -33,7 +43,7 @@ const pageDescription = description || t.siteDescription;
     <a class="brand" href={href(lang)} aria-label={t.home}><span class="brand-symbol">H</span><span>Holozz<span class="brand-dot">.</span></span></a>
     <button class="nav-toggle icon-button" type="button" aria-label={t.menu} aria-controls="main-navigation" aria-expanded="false"><Icon name="menu"/></button>
     <nav id="main-navigation" class="main-navigation" aria-label={t.navigation}>{sections.map(s => <a href={href(lang, s === 'home' ? '' : s)} aria-current={section === s ? 'page' : undefined}>{t[s]}</a>)}</nav>
-    <div class="header-actions"><a class="language-switch" href={switchTo} lang={otherLang === 'zh' ? 'zh-CN' : 'en'} aria-label={t.language} data-language={otherLang}><Icon name="globe" size={16}/>{otherLang === 'en' ? 'EN' : '中文'}</a><a class="header-github icon-button" href={github.profile.url} aria-label={t.github} target="_blank" rel="noopener noreferrer"><Icon name="github" size={20}/></a></div>
+    <div class="header-actions"><ThemeSwitch lang={lang}/><a class="language-switch" href={switchTo} lang={otherLang === 'zh' ? 'zh-CN' : 'en'} aria-label={t.language} data-language={otherLang}><Icon name="globe" size={16}/>{otherLang === 'en' ? 'EN' : '中文'}</a><a class="header-github icon-button" href={github.profile.url} aria-label={t.github} target="_blank" rel="noopener noreferrer"><Icon name="github" size={20}/></a></div>
   </div>
 </header>
 <div class="page-grid">

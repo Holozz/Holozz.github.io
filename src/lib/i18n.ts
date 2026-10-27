@@ -1,5 +1,6 @@
 export type Lang = 'zh' | 'en';
 const zh = {
+  appearance: '显示模式', lightMode: '白天', darkMode: '暗夜',
   home: '首页', articles: '文章', notes: '笔记', photos: '相册', projects: '项目',
   about: '关于', archives: '归档', categories: '分类', tags: '标签',
   tagline: '笔记、文章与沿途所见', homeDescription: '记录学习，保存思考，收藏日常。',
@@ -26,6 +27,7 @@ const zh = {
   postsCount: '记录', albumsCount: '相册', footer: '记录与分享', translationNotice: '当前展示原文，尚无此语言译文。',
 };
 const en: Record<keyof typeof zh, string> = {
+  appearance: 'Color mode', lightMode: 'Light', darkMode: 'Dark',
   home: 'Home', articles: 'Articles', notes: 'Notes', photos: 'Photos', projects: 'Projects',
   about: 'About', archives: 'Archives', categories: 'Categories', tags: 'Tags',
   tagline: 'Notes, stories & moments', homeDescription: 'A place for learning, thinking, and everyday moments.',
