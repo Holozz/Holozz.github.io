@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://holozz.github.io/sitemap.xml

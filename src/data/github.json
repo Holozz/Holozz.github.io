@@ -1,0 +1,47 @@
+{
+  "verifiedOn": "2026-10-27",
+  "profile": {
+    "login": "Holozz",
+    "name": "vladi",
+    "bio": "Find & Desert",
+    "location": "广东",
+    "url": "https://github.com/Holozz"
+  },
+  "projects": [
+    {
+      "name": "SellerPilot",
+      "url": "https://github.com/Holozz/SellerPilot",
+      "description": "SellerPilot---An E-commerce Agent System",
+      "language": "Python",
+      "fork": false
+    },
+    {
+      "name": "CourseNote",
+      "url": "https://github.com/Holozz/CourseNote",
+      "description": "A collection of Obsidian-based notes of the courses in my college",
+      "language": "HTML",
+      "fork": false
+    },
+    {
+      "name": "AI-Personalized-Private-Health-Management-System",
+      "url": "https://github.com/Holozz/AI-Personalized-Private-Health-Management-System",
+      "description": "",
+      "language": "",
+      "fork": true
+    },
+    {
+      "name": "SellerPillot-v2",
+      "url": "https://github.com/Holozz/SellerPillot-v2",
+      "description": "",
+      "language": "Java",
+      "fork": false
+    },
+    {
+      "name": "deepresearchAgent",
+      "url": "https://github.com/Holozz/deepresearchAgent",
+      "description": "",
+      "language": "Python",
+      "fork": false
+    }
+  ]
+}
