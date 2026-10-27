@@ -1,7 +1,7 @@
 # Holozz 个人网站实施计划
 
 日期：2026-10-27  
-状态：规划完成，尚未开始网站实现或发布。
+状态：首版实现及本地验证完成，准备首次 GitHub Pages 发布。
 
 ## 1. 已确定的目标
 
@@ -13,7 +13,7 @@
 - 项目：使用 GitHub 当前置顶仓库及其顺序，不把普通搜索结果当作置顶列表。
 - 域名：目标为 https://holozz.github.io/ ，对应目标仓库 Holozz/Holozz.github.io。
 - 本地项目目录：D:\Project\Holozz。
-- 本轮只交付计划，不创建托管站点、不编写网站功能、不部署。
+- 原始规划阶段仅交付计划；用户随后已授权实施、Git 初始化、阶段提交与网站发布。
 
 ## 2. 建站与托管方案
 
@@ -117,3 +117,12 @@ Sites 用于遵循建站与设计流程；正式发布目标按用户要求保�
 - Astro 多语言路由：https://docs.astro.build/en/guides/internationalization/
 - Astro 部署 GitHub Pages：https://docs.astro.build/en/guides/deploy/github/
 - GitHub Pages 站点与仓库命名：https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages
+
+## 10. 实施进度（2026-10-27）
+
+- 已完成 Git 初始化与规划基线提交。
+- 已核实头像、公开资料及 5 个真实置顶仓库。
+- 已完成 Astro 静态工程、18 个双语栏目及双语 404、站点地图、共享布局与手机导航。
+- 已完成 Markdown、数学公式、代码复制、目录、译文关联、相册模板和图片查看器。
+- 已完成临时内容与正式空内容产物验证；详见 VALIDATION.md。
+- 首次发布准备中；正式仓库与线上状态待部署完成后记录。
