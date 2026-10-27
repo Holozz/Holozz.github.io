@@ -35,4 +35,24 @@
 - 当前没有服务器、后台编辑器、评论、站内搜索、深色主题或访客统计。
 - 内容目录为空时，Astro glob loader 的“未找到 Markdown / JSON”提示属于当前预期状态；类型诊断为零问题。
 - 截图保存在忽略提交的 test-results/ 中。
-- 线上发布状态在首次部署后补充。
+- 首次 GitHub Actions 构建与部署均成功，线上检查通过；见下方发布记录。
+
+## 线上发布记录
+
+- 正式地址：https://holozz.github.io/
+- 英文入口：https://holozz.github.io/en/
+- 公开仓库：https://github.com/Holozz/Holozz.github.io
+- 首次部署提交：d45c991d2b340c2089564c9965ce1050488161de。
+- 首次流水线：https://github.com/Holozz/Holozz.github.io/actions/runs/40483371867 （build / deploy 均 success）。
+- HTTPS 访问全部 18 个双语栏目，均返回 200，页面未包含临时测试内容。
+- 线上 Chrome 已核实：头像及资源加载、首页语言切换、手机英文相册空状态、自定义 404；无页面错误或资源请求失败。
+- 线上截图：test-results/live-home-desktop.png、test-results/live-photos-mobile.png。
+
+## Git 阶段记录
+
+- 445fb16：规划基线。
+- dec9c14：Astro 工程与已核实 GitHub 资料。
+- 2c56aa0：双语栏目、响应式布局及导航。
+- 3dc9c63：文章和相册模板、临时内容回归。
+- d45c991：Pages 工作流、发布工具、维护及验证文档。
+- 后续文档提交记录正式上线结果，具体 SHA 见 Git 历史。
