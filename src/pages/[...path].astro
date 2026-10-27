@@ -1,0 +1,26 @@
+---
+import { render } from 'astro:content';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PageView from '../components/PageView.astro';
+import PostView from '../components/PostView.astro';
+import AlbumView from '../components/AlbumView.astro';
+import { getRoutes, getPosts, translatedPost, postHref, type PageRoute } from '../lib/content';
+import { messages, href } from '../lib/i18n';
+export async function getStaticPaths() { return (await getRoutes()).map(route => ({ params: { path: route.path }, props: { route } })); }
+interface Props { route: PageRoute; }
+const { route } = Astro.props;
+const { lang, section, post, album, term } = route; const t = messages[lang];
+const otherLang = lang === 'zh' ? 'en' : 'zh';
+const posts = await getPosts();
+const counterpart = post ? translatedPost(post,posts,otherLang) : undefined;
+const routeOther = (await getRoutes()).find(r => r.lang === otherLang && r.section === section && r.term === term && (album ? r.album?.id === album.id : !r.album) && !r.post);
+const alternateHref = post ? (counterpart ? postHref(counterpart) : undefined) : routeOther ? href(otherLang, (routeOther.path || '').replace(/^en\/?/,'')) : undefined;
+const switchHref = post ? counterpart ? postHref(counterpart) : href(otherLang,section)+'?original='+encodeURIComponent(postHref(post)) : alternateHref || href(otherLang,section === 'home' ? '' : section);
+const title = post?.data.title || album?.data.title[lang] || term || (section === 'home' ? undefined : t[section]);
+const headings = post ? (await render(post)).headings.filter(h => h.depth === 2 || h.depth === 3) : [];
+const siblings = posts.filter(p => p.data.lang === lang && p.data.kind === post?.data.kind);
+---
+<SiteLayout lang={lang} section={section} title={title} description={post?.data.description || album?.data.description[lang]} switchHref={switchHref} alternateHref={alternateHref}>
+{headings.length > 0 && <nav slot="toc" class="card sidebar-card toc" aria-label={t.contents}><h2>{t.contents}</h2><ul>{headings.map(h => <li class={'depth-'+h.depth}><a href={'#'+h.slug}>{h.text}</a></li>)}</ul></nav>}
+{post ? <PostView post={post} lang={lang} siblings={siblings}/> : album ? <AlbumView album={album} lang={lang}/> : <PageView route={route}/>}
+</SiteLayout>

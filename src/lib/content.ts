@@ -4,7 +4,8 @@ import { href } from './i18n';
 
 export type Post = CollectionEntry<'posts'>;
 export type Album = CollectionEntry<'albums'>;
-export async function getPosts() {
+export async function getPosts(): Promise<Post[]> {
+  if (!Object.keys(import.meta.glob('../content/posts/**/*.md')).length) return [];
   const posts = (await getCollection('posts')).filter(p => !p.data.draft).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
   const routes = new Set<string>(); const translations = new Set<string>();
   for (const p of posts) {
@@ -14,7 +15,7 @@ export async function getPosts() {
   }
   return posts;
 }
-export async function getAlbums() { return (await getCollection('albums')).filter(a => !a.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()); }
+export async function getAlbums(): Promise<Album[]> { if (!Object.keys(import.meta.glob('../content/albums/**/*.json')).length) return []; return (await getCollection('albums')).filter(a => !a.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()); }
 export function postHref(post: Post) { return href(post.data.lang, post.data.kind + '/' + post.data.slug); }
 export function localizedPosts(posts: Post[], lang: Lang) {
   return posts.filter(p => p.data.lang === lang || !posts.some(other => other.data.lang === lang && other.data.kind === p.data.kind && other.data.translationKey === p.data.translationKey));

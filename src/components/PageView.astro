@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import Empty from './Empty.astro';
+import PostList from './PostList.astro';
+import Icon from './Icon.astro';
+import github from '../data/github.json';
+import { getPosts, getAlbums, localizedPosts, taxonomy, postHref, type PageRoute } from '../lib/content';
+import { messages, href, formatDate } from '../lib/i18n';
+interface Props { route: PageRoute; }
+const { route } = Astro.props;
+const { lang, section, term, field } = route; const t = messages[lang];
+const posts = localizedPosts(await getPosts(), lang); const albums = await getAlbums();
+const listing = posts.filter(p => section === 'articles' || section === 'notes' ? p.data.kind === section : field ? (field === 'tags' ? p.data.tags.includes(term!) : p.data.category === term) : true);
+const descriptions = { articles:t.articlesDescription, notes:t.notesDescription, photos:t.photosDescription, projects:t.projectsDescription, about:t.aboutDescription, archives:t.archivesDescription, categories:t.categoriesDescription, tags:t.tagsDescription, home:t.homeDescription };
+const years = [...new Set(posts.map(p => p.data.pubDate.getUTCFullYear()))];
+---
+{section === 'home' ? <>
+  <section class="card welcome-card"><p class="welcome-small">Holozz · {github.profile.bio}</p><h1>{t.tagline}</h1><p>{t.homeDescription}</p></section>
+  <div class="entry-links">{(['articles','notes','photos'] as const).map(s => <a class="entry-link" href={href(lang,s)}><Icon name={s}/><span>{t[s]}</span><Icon name="arrow" size={15}/></a>)}</div>
+  <section aria-label={t.latest}><div class="section-heading"><h2>{t.latest}</h2><a href={href(lang,'archives')}>{t.viewAll}<Icon name="arrow" size={13}/></a></div>{posts.length ? <PostList posts={posts.slice(0,5)} lang={lang}/> : <div class="card"><Empty lang={lang}/></div>}</section>
+  <section class="home-projects" aria-label={t.pinned}><div class="section-heading"><h2>{t.pinned}</h2><a href={href(lang,'projects')}>{t.viewAll}<Icon name="arrow" size={13}/></a></div><div class="card mini-projects">{github.projects.slice(0,3).map(p => <a class="mini-project" href={p.url} target="_blank" rel="noopener noreferrer"><span><Icon name="projects" size={14}/> {p.name}</span><small>{p.language || 'GitHub'} ↗</small></a>)}</div></section>
+</> : <>
+  <header class="card page-heading"><h1><Icon name={section} size={23}/>{term || t[section]}</h1><p>{term ? t[section] : descriptions[section]}</p></header>
+  {(section === 'articles' || section === 'notes' || term) && (listing.length ? <PostList posts={listing} lang={lang}/> : <div class="card"><Empty lang={lang} icon={section} description={section === 'notes' ? t.emptyNotes : t.emptyArticles}/></div>)}
+  {section === 'photos' && (albums.length ? <div class="album-grid">{albums.map(a => <a class="card album-card" href={href(lang,'photos/'+a.data.slug)}><Image src={a.data.photos[0].src} width={Math.min(640,a.data.photos[0].src.width)} alt={a.data.photos[0].alt[lang]} loading="lazy"/><div class="album-caption"><h2>{a.data.title[lang]}</h2><p>{formatDate(a.data.date,lang)} · {a.data.photos.length} {t.photoCount}</p></div></a>)}</div> : <div class="card"><Empty lang={lang} icon="photos" description={t.emptyPhotos}/></div>)}
+  {section === 'projects' && <div class="project-list">{github.projects.map(p => <article class="card project-card"><h2><a href={p.url} target="_blank" rel="noopener noreferrer">{p.name} ↗</a></h2><p>{p.description || t.noProjectDescription}</p><div class="project-meta">{p.language && <span><i class="language-dot"></i>{p.language}</span>}{p.fork && <span>{t.fork}</span>}</div></article>)}</div>}
+  {section === 'about' && <section class="card about-card"><h2>{github.profile.name} <span class="muted">@{github.profile.login}</span></h2><p>{t.siteDescription}</p><dl class="profile-details"><div><dt>{t.bio}</dt><dd>{github.profile.bio}</dd></div><div><dt>{t.location}</dt><dd>{github.profile.location}</dd></div><div><dt>GitHub</dt><dd><a href={github.profile.url} target="_blank" rel="noopener noreferrer">github.com/Holozz ↗</a></dd></div></dl><a class="button" href={github.profile.url} target="_blank" rel="noopener noreferrer"><Icon name="github" size={17}/>{t.githubVisit}</a></section>}
+  {section === 'archives' && (posts.length ? <div class="card timeline">{years.map(year => <section><h2 class="archive-year">{year}</h2>{posts.filter(p => p.data.pubDate.getUTCFullYear() === year).map(p => <div class="timeline-entry"><time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate,lang)}</time><a href={postHref(p)} lang={p.data.lang}>{p.data.title}</a></div>)}</section>)}</div> : <div class="card"><Empty lang={lang} icon="archives"/></div>)}
+  {(section === 'categories' || section === 'tags') && !term && (taxonomy(posts,section === 'tags' ? 'tags' : 'category').length ? <div class="card taxonomy-list">{taxonomy(posts,section === 'tags' ? 'tags' : 'category').map(v => <a href={href(lang,section+'/'+encodeURIComponent(v))}>{v}</a>)}</div> : <div class="card"><Empty lang={lang} icon={section} description={t.emptyTaxonomy}/></div>)}
+</>}
+<nav class="mobile-explore" aria-label={t.explore}>{(['archives','categories','tags'] as const).map(s => <a href={href(lang,s)}>{t[s]}</a>)}</nav>

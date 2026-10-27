@@ -1,0 +1,85 @@
+---
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import github from '../data/github.json';
+import { getPosts, getAlbums, localizedPosts, taxonomy, postHref } from '../lib/content';
+import { messages, href, sections, formatDate, type Lang, type Section } from '../lib/i18n';
+interface Props { lang: Lang; section: Section; title?: string; description?: string; switchHref?: string; alternateHref?: string; noindex?: boolean; }
+const { lang, section, title, description, switchHref, alternateHref, noindex = false } = Astro.props;
+const t = messages[lang]; const otherLang = lang === 'zh' ? 'en' : 'zh';
+const posts = localizedPosts(await getPosts(), lang); const albums = await getAlbums();
+const categories = taxonomy(posts, 'category'); const tags = taxonomy(posts, 'tags');
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const switchTo = switchHref || href(otherLang, section === 'home' ? '' : section);
+const pageTitle = title ? title + ' · Holozz' : t.siteName;
+const pageDescription = description || t.siteDescription;
+---
+<!doctype html>
+<html lang={lang === 'zh' ? 'zh-CN' : 'en'}>
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#3273dc"/><title>{pageTitle}</title>
+  <meta name="description" content={pageDescription}/>
+  {!noindex && <link rel="canonical" href={canonical}/>}<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  {alternateHref && <><link rel="alternate" hreflang={lang === 'zh' ? 'zh-CN' : 'en'} href={canonical}/><link rel="alternate" hreflang={otherLang === 'zh' ? 'zh-CN' : 'en'} href={new URL(alternateHref, Astro.site)}/></>}
+  {noindex && <meta name="robots" content="noindex"/>}
+  <meta property="og:type" content="website"/><meta property="og:title" content={pageTitle}/><meta property="og:description" content={pageDescription}/><meta property="og:url" content={canonical}/>
+  <meta property="og:image" content={new URL('/images/avatar.png', Astro.site)}/>
+</head>
+<body>
+<a class="skip-link" href="#main">{t.skip}</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href={href(lang)} aria-label={t.home}><span class="brand-symbol">H</span><span>Holozz<span class="brand-dot">.</span></span></a>
+    <button class="nav-toggle icon-button" type="button" aria-label={t.menu} aria-controls="main-navigation" aria-expanded="false"><Icon name="menu"/></button>
+    <nav id="main-navigation" class="main-navigation" aria-label={t.navigation}>{sections.map(s => <a href={href(lang, s === 'home' ? '' : s)} aria-current={section === s ? 'page' : undefined}>{t[s]}</a>)}</nav>
+    <div class="header-actions"><a class="language-switch" href={switchTo} lang={otherLang === 'zh' ? 'zh-CN' : 'en'} aria-label={t.language} data-language={otherLang}><Icon name="globe" size={16}/>{otherLang === 'en' ? 'EN' : '中文'}</a><a class="header-github icon-button" href={github.profile.url} aria-label={t.github} target="_blank" rel="noopener noreferrer"><Icon name="github" size={20}/></a></div>
+  </div>
+</header>
+<div class="page-grid">
+  <aside class="left-sidebar" aria-label={t.profile}>
+    <section class="card profile-card">
+      <img class="avatar" src="/images/avatar.png" width="112" height="112" alt={github.profile.login}/>
+      <h2>{github.profile.name}</h2><p class="profile-handle">@{github.profile.login}</p>
+      <p class="profile-bio">{github.profile.bio}</p>
+      <p class="profile-location"><Icon name="pin" size={14}/>{github.profile.location}</p>
+      <div class="profile-stats"><a href={href(lang,'archives')}><strong>{posts.length}</strong><span>{t.postsCount}</span></a><a href={href(lang,'categories')}><strong>{categories.length}</strong><span>{t.categories}</span></a><a href={href(lang,'photos')}><strong>{albums.length}</strong><span>{t.albumsCount}</span></a></div>
+      <a class="button profile-button" href={github.profile.url} target="_blank" rel="noopener noreferrer"><Icon name="github" size={17}/>{t.githubVisit}</a>
+    </section>
+    <section class="card sidebar-card explore-card"><h2>{t.explore}</h2><div class="sidebar-links">{(['archives','categories','tags'] as const).map(s => <a href={href(lang,s)} aria-current={section === s ? 'page' : undefined}><span><Icon name={s} size={16}/>{t[s]}</span><Icon name="chevron" size={13}/></a>)}</div></section>
+    <section class="card sidebar-card external-card"><h2>{t.links}</h2><a class="external-link" href={github.profile.url} target="_blank" rel="noopener noreferrer"><span>GitHub</span><span>github.com/Holozz ↗</span></a></section>
+  </aside>
+  <main id="main" class="main-content" tabindex="-1">
+    <div id="translation-notice" class="translation-notice" hidden data-message={t.translationMissing} data-original={t.original}></div>
+    <slot/>
+  </main>
+  <aside class="right-sidebar" aria-label={t.explore}>
+    <slot name="toc"/>
+    <section class="card sidebar-card"><h2>{t.recent}</h2>{posts.length ? <ul class="recent-list">{posts.slice(0,4).map(p => <li><time datetime={p.data.pubDate.toISOString()}>{formatDate(p.data.pubDate,lang)}</time><a href={postHref(p)} lang={p.data.lang}>{p.data.title}</a></li>)}</ul> : <p class="sidebar-empty">{t.noRecent}</p>}</section>
+    <section class="card sidebar-card"><div class="sidebar-title"><h2>{t.categories}</h2><a href={href(lang,'categories')} aria-label={t.viewAll}><Icon name="chevron" size={14}/></a></div>{categories.length ? <div class="sidebar-links">{categories.map(c => <a href={href(lang,'categories/'+encodeURIComponent(c))}>{c}</a>)}</div> : <p class="sidebar-empty">{t.noCategories}</p>}</section>
+    <section class="card sidebar-card"><div class="sidebar-title"><h2>{t.tags}</h2><a href={href(lang,'tags')} aria-label={t.viewAll}><Icon name="chevron" size={14}/></a></div>{tags.length ? <div class="tag-cloud">{tags.map(tag => <a href={href(lang,'tags/'+encodeURIComponent(tag))}>{tag}</a>)}</div> : <p class="sidebar-empty">{t.noTags}</p>}</section>
+    <a class="archive-link" href={href(lang,'archives')}><Icon name="archives" size={17}/>{t.archives}<Icon name="arrow" size={15}/></a>
+  </aside>
+</div>
+<footer class="site-footer"><span>© {new Date().getUTCFullYear()} Holozz</span><span>{t.footer}</span><a href={github.profile.url} target="_blank" rel="noopener noreferrer">GitHub</a></footer>
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const navigation = document.querySelector('#main-navigation');
+  toggle?.addEventListener('click', () => { const open = toggle.getAttribute('aria-expanded') !== 'true'; toggle.setAttribute('aria-expanded', String(open)); navigation?.classList.toggle('is-open', open); });
+  document.addEventListener('keydown', e => { if(e.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') { toggle.click(); toggle.focus(); } });
+  document.querySelector('[data-language]')?.addEventListener('click', e => {
+    try { localStorage.setItem('holozz-language', (e.currentTarget as HTMLElement).dataset.language || 'zh'); } catch {}
+  });
+  const original = new URLSearchParams(location.search).get('original');
+  const notice = document.querySelector<HTMLElement>('#translation-notice');
+  if (original && notice) {
+    const url = new URL(original, location.origin);
+    if (url.origin === location.origin && /^\/(en\/)?(articles|notes)\/[a-z0-9-]+\/$/.test(url.pathname)) {
+      notice.append(document.createTextNode(notice.dataset.message + ' '));
+      const link = document.createElement('a'); link.href = url.pathname; link.textContent = notice.dataset.original || '';
+      notice.append(link); notice.hidden = false;
+    }
+  }
+</script>
+</body>
+</html>

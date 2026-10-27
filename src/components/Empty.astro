@@ -1,0 +1,11 @@
+---
+import Icon from './Icon.astro';
+import { messages, type Lang } from '../lib/i18n';
+interface Props { lang: Lang; icon?: string; description?: string; compact?: boolean; }
+const { lang, icon = 'articles', description, compact = false } = Astro.props;
+const t = messages[lang];
+---
+<div class:list={['empty-state', { compact }]}>
+  <span class="empty-icon"><Icon name={icon} size={30}/></span>
+  <h2>{t.emptyTitle}</h2><p>{description || t.emptyDescription}</p>
+</div>

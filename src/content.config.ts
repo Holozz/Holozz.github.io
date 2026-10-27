@@ -13,8 +13,8 @@ const posts = defineCollection({
     lang: z.enum(['zh', 'en']),
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
-    category: z.string().optional(),
-    tags: z.array(z.string().min(1)).default([]),
+    category: z.string().min(1).regex(/^[^\/#?]+$/).optional(),
+    tags: z.array(z.string().min(1).regex(/^[^\/#?]+$/)).default([]),
     draft: z.boolean().default(true),
   }),
 });

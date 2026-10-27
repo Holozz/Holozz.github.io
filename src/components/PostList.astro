@@ -1,0 +1,17 @@
+---
+import type { Post } from '../lib/content';
+import { postHref } from '../lib/content';
+import { messages, formatDate, type Lang } from '../lib/i18n';
+import Icon from './Icon.astro';
+interface Props { posts: Post[]; lang: Lang; }
+const { posts, lang } = Astro.props;
+const t = messages[lang];
+---
+<div class="post-list">
+{posts.map(post => <article class="card post-preview">
+  <div class="post-meta"><span>{t[post.data.kind]}</span><time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate, lang)}</time>{post.data.lang !== lang && <span class="language-badge">{post.data.lang === 'zh' ? t.originalZh : t.originalEn}</span>}</div>
+  <h2 lang={post.data.lang}><a href={postHref(post)}>{post.data.title}</a></h2>
+  <p lang={post.data.lang}>{post.data.description}</p>
+  <a class="text-link" href={postHref(post)}>{post.data.lang === lang ? t.read : t.original}<Icon name="arrow" size={15}/></a>
+</article>)}
+</div>
