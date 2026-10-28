@@ -59,3 +59,11 @@
 ## 修改配色
 
 appearance.css 中的 :root 是白天色板，[data-theme="dark"] 是暗夜色板。页面背景、卡片、文字、链接、边框、按钮使用同一组变量；照片保持原色，不做全页反色。代码高亮分别使用 github-light / github-dark。
+
+## Eras 字体名称排查（2026-10-28）
+
+本机 Chrome 的 CSS 字体族匹配使用 "Eras ITC"，能按字重选择 Eras Medium / Demi / Bold；仅填写 "Eras Medium ITC" 时，虽然 CSS 中显示这个名称，实际英文仍会回退到其他字体。配置中保留 "ErasItcTEEMed" 和 "Eras Medium ITC" 作为其他安装版本的后备名称。
+
+字体文件完整名称、注册表展示名、CSS 字体族名称以及 local() 接受的名称不一定相同。不能仅凭 local() 是否加载成功判断 font-family 是否匹配。请在浏览器开发工具的 Rendered Fonts（实际渲染字体）查看最终结果，而不是只看 Computed 中的 font-family 列表。
+
+本机实测：普通英文使用 Eras Medium ITC，标题使用 Eras Demi ITC，品牌粗体使用 Eras Bold ITC；中文继续使用 Microsoft YaHei。线上字体配置是否发布和本机实际字体是否匹配，是两个独立的检查步骤。

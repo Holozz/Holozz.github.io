@@ -1,6 +1,6 @@
 /* Edit these variables to change fonts and reading size across the site. */
 :root {
-  --font-ui: "Eras Medium ITC", "Ubuntu", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-ui: "Eras ITC", "ErasItcTEEMed", "Eras Medium ITC", "Ubuntu", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-reading: var(--font-ui);
   --font-code: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   --font-size-ui: 14px;
