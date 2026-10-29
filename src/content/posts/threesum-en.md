@@ -2,16 +2,15 @@
 title: "LeetCode 15: 3Sum"
 description: "Build on Two Sum: fix one value, then use sorting and HashSet removal to avoid duplicate triplets."
 slug: threesum
-translationKey: threesum-zh
+translationKey: threesum
 kind: articles
 lang: en
 pubDate: 2026-10-28
-# updatedDate: 2026-10-28
+# updatedDate: 2026-10-29
 category: Algorithms
-tags: [Notes]
+tags: [Two-points]
 draft: false
 ---
-
 ## Starting from Two Sum
 
 Given an integer array `nums`, find all triplets whose sum is `0`. The three elements must come from distinct indices, and the result must not contain duplicate value combinations.
@@ -69,12 +68,12 @@ When `v > other`, the smaller complement, if present, must already have been vis
 
 For example, with `target = 4` and suffix `[1, 1, 3, 3]`:
 
-| Current value | Action | Set | New pair |
-| --- | --- | --- | --- |
-| First `1` | Add it to the set | `{1}` | None |
-| Second `1` | Add it again; the set is unchanged | `{1}` | None |
-| First `3` | Find and remove `1` | `{}` | `[1, 3]` |
-| Second `3` | No `1` remains | `{}` | None |
+| Current value | Action                             | Set     | New pair   |
+| ------------- | ---------------------------------- | ------- | ---------- |
+| First `1`   | Add it to the set                  | `{1}` | None       |
+| Second `1`  | Add it again; the set is unchanged | `{1}` | None       |
+| First `3`   | Find and remove `1`              | `{}`  | `[1, 3]` |
+| Second `3`  | No `1` remains                   | `{}`  | None       |
 
 **Sorting and removal work together to prevent duplicates.** After recording `[1, 3]`, no later element can be `1`, so the removed value cannot enter the set again.
 
@@ -189,13 +188,13 @@ Copying a slice on every iteration does not change the asymptotic time bound, bu
 
 ## Edge cases and pitfalls
 
-| Case | Expected result or handling |
-| --- | --- |
-| `[0, 0, 0, 0]` | Return `[0, 0, 0]` only once: skip repeated fixed values and add the equal-value pair once |
-| `[-2, 1]` | No triplet; the single `1` cannot be used twice |
-| `[-2, 1, 1]` | `[-2, 1, 1]` is valid because the two occurrences of `1` have different indices |
-| `[-2, 0, 0, 2, 2]` | Return the value combination `[-2, 0, 2]` only once |
-| The suffix is not sorted | Removing complements alone does not guarantee deduplication |
-| The outer loop does not skip equal fixed values | Different helper calls can return the same triplet |
+| Case                                            | Expected result or handling                                                                  |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `[0, 0, 0, 0]`                                | Return `[0, 0, 0]` only once: skip repeated fixed values and add the equal-value pair once |
+| `[-2, 1]`                                     | No triplet; the single `1` cannot be used twice                                            |
+| `[-2, 1, 1]`                                  | `[-2, 1, 1]` is valid because the two occurrences of `1` have different indices          |
+| `[-2, 0, 0, 2, 2]`                            | Return the value combination `[-2, 0, 2]` only once                                        |
+| The suffix is not sorted                        | Removing complements alone does not guarantee deduplication                                  |
+| The outer loop does not skip equal fixed values | Different helper calls can return the same triplet                                           |
 
 The key idea is to **use sorting to control when values can appear, remove smaller complements once their distinct-value pairs have been recorded, and handle equal-value pairs with a separate count.**

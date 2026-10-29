@@ -2,13 +2,13 @@
 title: "lc15.三数之和"
 description: "从两数之和出发：固定一个数，利用排序和 HashSet 删除已匹配元素，避免重复三元组。"
 slug: threesum
-translationKey: threesum-zh
+translationKey: threesum
 kind: articles
 lang: zh
 pubDate: 2026-10-28
-# updatedDate: 2026-10-28
+# updatedDate: 2026-10-29
 category: 算法
-tags: [笔记]
+tags: [双指针]
 draft: false
 ---
 ## 从两数之和出发
